@@ -6,7 +6,7 @@ from typing import Annotated
 from core import settings, db_helper
 from core.services import QuestionService
 from core.schemas import (
-    QuestionAllResponse,
+    QuestionListResponse,
     QuestionCreateRequest,
     QuestionCreateResponse,
 )
@@ -14,12 +14,14 @@ from core.schemas import (
 router = APIRouter(prefix=settings.api.v1.question, tags=["Question"])
 
 
-@router.get("/", response_model=QuestionAllResponse)
+@router.get("/", response_model=QuestionListResponse)
 async def get_all_question(
     request: Request,
     session: Annotated[AsyncSession, Depends(db_helper.session_getter)],
 ):
-    return await QuestionService(session=session).get_all_question()
+
+    questions = await QuestionService(session=session).get_all_question()
+    return {"questions": questions}
 
 
 @router.post("/", response_model=QuestionCreateResponse)
