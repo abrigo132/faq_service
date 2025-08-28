@@ -11,6 +11,10 @@ class QuestionAllResponse(QuestionBase):
     id: int
 
 
+class QuestionListResponse(BaseModel):
+    questions: list[QuestionAllResponse]
+
+
 class QuestionCreateResponse(QuestionBase):
     id: int
 
