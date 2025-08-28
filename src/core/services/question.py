@@ -1,7 +1,6 @@
 from fastapi import Depends
 from sqlalchemy import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Annotated
 
 from repositories import QuestionRepository
 from core import db_helper
@@ -11,9 +10,7 @@ from core.models import Question
 
 class QuestionService:
 
-    def __init__(
-        self, session: Annotated[AsyncSession, Depends(db_helper.session_getter)]
-    ):
+    def __init__(self, session: AsyncSession = Depends(db_helper.session_getter)):
         self.session: AsyncSession = session
         self.question_repo = QuestionRepository(session=session)
 
