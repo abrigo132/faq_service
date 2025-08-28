@@ -11,7 +11,7 @@ from core.models import Question
 
 class QuestionService:
 
-    def __init(
+    def __init__(
         self, session: Annotated[AsyncSession, Depends(db_helper.session_getter)]
     ):
         self.session: AsyncSession = session
