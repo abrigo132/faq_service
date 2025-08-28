@@ -1,7 +1,7 @@
 from fastapi import Depends
 from sqlalchemy import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing_extensions import Annotated
+from typing import Annotated
 
 from repositories import QuestionRepository
 from core import db_helper
