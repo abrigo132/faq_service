@@ -44,7 +44,7 @@ class DbHelper:
 
 
 db_helper: DbHelper = DbHelper(
-    url=settings.db.url,
+    url=str(settings.db.url),
     pool_size=settings.db.pool_size,
     max_overflow=settings.db.max_overflow,
     echo=settings.db.echo,
