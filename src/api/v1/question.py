@@ -21,7 +21,7 @@ async def create_new_question(
     request: Request,
     question_creds: QuestionCreateRequest,
 ):
-    return QuestionService().create_question(question_creds=question_creds)
+    return await QuestionService().create_question(question_creds=question_creds)
 
 
 @router.get("/{id}/")
@@ -29,7 +29,7 @@ async def get_question_by_id(
     request: Request,
     id: int,
 ):
-    return QuestionService().get_question_with_answers(id=id)
+    return await QuestionService().get_question_with_answers(id=id)
 
 
 @router.delete("/{id}/")
@@ -37,4 +37,4 @@ async def delete_question_by_id(
     request: Request,
     id: int,
 ):
-    return QuestionService().delete_question_by_id(id=id)
+    return await QuestionService().delete_question_by_id(id=id)
