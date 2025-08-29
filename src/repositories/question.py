@@ -45,5 +45,9 @@ class QuestionRepository:
         result = await self.session.scalars(stmt)
         question = result.unique().one_or_none()
 
-    async def delete(self, id: int):
-        pass
+        if question:
+            await self.session.delete(question)
+            await self.session.flush()
+            return question
+
+        return question
