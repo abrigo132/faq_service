@@ -3,7 +3,7 @@ from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core import db_helper
-from core.schemas import AnswerCreateRequest, AnswerCreateResponse
+from core.schemas import AnswerCreateRequest, AnswerCreateResponse, AnswerByIdRequest
 from core.services import AnswerService
 
 router = APIRouter(tags=["Answer"])
@@ -25,7 +25,7 @@ async def create_answer(
     return await AnswerService(session=session).create_answer(answer_creds=answer_creds)
 
 
-@router.get("/answers/{id}/")
+@router.get("/answers/{id}/", response_model=AnswerByIdRequest)
 async def get_answer_by_id(
     request: Request,
     id: int,
