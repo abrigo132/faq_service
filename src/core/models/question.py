@@ -1,6 +1,8 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import List
+
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
-from sqlalchemy import func
+from sqlalchemy import func, ForeignKey
 
 from core.models import Base
 from core.models.mixins import IdIntPkMixin
@@ -23,3 +25,9 @@ class Answer(Base, IdIntPkMixin):
         nullable=False,
         server_default=func.now(),
     )
+
+    question_id: Mapped[int] = mapped_column(
+        ForeignKey(column="questions.id"), nullable=False
+    )
+
+    question: Mapped["Question"] = relationship("Question", back_populates="answers")
