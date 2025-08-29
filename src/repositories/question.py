@@ -3,6 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from typing import Type
 
+from sqlalchemy.orm import joinedload
+
 from core.models import Question
 from core.schemas import QuestionCreateRequest
 
