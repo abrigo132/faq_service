@@ -4,6 +4,9 @@ __all__ = (
     "QuestionCreateRequest",
     "QuestionByIdWithAnswers",
     "QuestionListResponse",
+    "AnswerByIdRequest",
+    "AnswerCreateRequest",
+    "AnswerCreateResponse",
 )
 
 from .question import (
@@ -12,4 +15,9 @@ from .question import (
     QuestionCreateRequest,
     QuestionCreateResponse,
     QuestionListResponse,
+)
+from .answer import (
+    AnswerByIdRequest,
+    AnswerCreateRequest,
+    AnswerCreateResponse,
 )

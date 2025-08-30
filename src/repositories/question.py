@@ -3,6 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from typing import Type
 
+from sqlalchemy.orm import joinedload
+
 from core.models import Question
 from core.schemas import QuestionCreateRequest
 
@@ -27,8 +29,27 @@ class QuestionRepository:
         questions: ScalarResult[Question] = await self.session.scalars(stmt)
         return questions.all()
 
-    async def get_by_id(self, id: int) -> Question:
-        pass
+    async def get_by_id(self, id: int) -> Question | None:
+        stmt = (
+            select(self.model)
+            .where(self.model.id == id)
+            .options(joinedload(self.model.answers))
+        )
+        question = await self.session.scalars(stmt)
+        return question.unique().one_or_none()
 
-    async def delete(self, id: int):
-        pass
+    async def delete(self, id: int) -> Question | None:
+        stmt = (
+            select(Question)
+            .where(Question.id == id)
+            .options(joinedload(Question.answers))
+        )
+        result = await self.session.scalars(stmt)
+        question = result.unique().one_or_none()
+
+        if question:
+            await self.session.delete(question)
+            await self.session.flush()
+            return question
+
+        return question

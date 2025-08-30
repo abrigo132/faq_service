@@ -1,3 +1,4 @@
+from fastapi import HTTPException, status
 from sqlalchemy import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,7 +23,21 @@ class QuestionService:
         return questions
 
     async def delete_question_by_id(self, id: int):
-        pass
+        question = await self.question_repo.delete(id=id)
+        if question is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Ответ с ID {id} не существует",
+            )
+        await self.session.commit()
+        return {"message": f"Ответ с ID {id} удален"}
 
-    async def get_question_with_answers(self, id: int):
-        pass
+    async def get_question_with_answers(self, id: int) -> Question | HTTPException:
+        question: Question | None = await self.question_repo.get_by_id(id=id)
+        if question is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Вопрос с {id=} не найден",
+            )
+
+        return question
