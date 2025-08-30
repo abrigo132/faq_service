@@ -1,5 +1,7 @@
 import pytest
 from unittest.mock import AsyncMock, patch
+
+from core import DuplicateEntryException
 from core.services import QuestionService
 from core.schemas import QuestionCreateRequest
 from core.models import Question
@@ -25,3 +27,21 @@ async def test_create_question():
 
         service.question_repo.add.assert_called_once()
         mock_session.commit.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_create_question_duplicate():
+    """Тест обработки дубликата вопроса"""
+    mock_session = AsyncMock()
+    service = QuestionService(mock_session)
+
+    # Мокируем репозиторий так, чтобы он бросал исключение дубликата
+    with patch.object(
+        service.question_repo, "add", AsyncMock(side_effect=DuplicateEntryException())
+    ):
+        with pytest.raises(DuplicateEntryException):
+            question_data = QuestionCreateRequest(text="Тестовый вопрос")
+            await service.create_question(question_data)
+
+        # Проверяем, что commit не был вызван (из-за исключения)
+        mock_session.commit.assert_not_called()
