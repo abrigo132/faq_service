@@ -3,6 +3,7 @@ from sqlalchemy import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 import logging
 
+from core import RepositoryException
 from repositories import QuestionRepository
 from core.schemas import QuestionCreateRequest
 from core.models import Question
@@ -19,9 +20,22 @@ class QuestionService:
 
     async def create_question(self, question_creds: QuestionCreateRequest) -> Question:
         logger.info("Создание вопроса с текстом: %r", question_creds.text)
-        question: Question = await self.question_repo.add(question_creds=question_creds)
-        await self.session.commit()
-        return question
+        try:
+            question: Question = await self.question_repo.add(
+                question_creds=question_creds
+            )
+            await self.session.commit()
+            return question
+        except RepositoryException:
+            # Пробрасываем исключение дальше - оно будет обработано в API слое
+            raise
+        except Exception as e:
+            logger.error("Неожиданная ошибка при создании вопроса: %s", str(e))
+            await self.session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Внутренняя ошибка сервера",
+            )
 
     async def get_all_question(self) -> Sequence[Question]:
         logger.info("Запрос на получение всех вопросов")
