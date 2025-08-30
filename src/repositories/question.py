@@ -6,6 +6,7 @@ import logging
 
 from sqlalchemy.orm import joinedload
 
+from core import DuplicateEntryException, ForeignKeyViolationException
 from core.models import Question
 from core.schemas import QuestionCreateRequest
 
@@ -24,13 +25,28 @@ class QuestionRepository:
             self.session.add(question)
             await self.session.flush()
             return question
-        except IntegrityError:
+        except IntegrityError as e:
             logger.error(
                 "Не удалось создать вопрос с текстом: %r",
                 question_creds.text,
                 exc_info=True,
             )
             await self.session.rollback()
+            error_msg = str(e.orig)
+            if "unique" in error_msg.lower():
+                logger.error(
+                    "Не удалось создать вопрос с текстом: %r - дубликат",
+                    question_creds.text,
+                    exc_info=True,
+                )
+                raise DuplicateEntryException("Вопрос с таким текстом уже существует")
+            else:
+                logger.error(
+                    "Не удалось создать вопрос с текстом: %r - ошибка целостности",
+                    question_creds.text,
+                    exc_info=True,
+                )
+                raise ForeignKeyViolationException("Ошибка целостности данных")
 
     async def get(self) -> Sequence[Question]:
         stmt = select(self.model)
