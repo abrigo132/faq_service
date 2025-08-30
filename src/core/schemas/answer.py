@@ -1,6 +1,9 @@
 from datetime import datetime
+import logging
 
 from pydantic import BaseModel, Field, field_validator
+
+logger = logging.getLogger(__name__)
 
 
 class AnswerBase(BaseModel):
@@ -20,6 +23,7 @@ class AnswerBase(BaseModel):
     @classmethod
     def validate_text_not_empty(cls, v):
         if not v.strip():
+            logger.info("Ошибка валидации текста вопроса. Текст: %r", v)
             raise ValueError(
                 "Текст ответа не может быть пустым или состоять только из пробелов"
             )
