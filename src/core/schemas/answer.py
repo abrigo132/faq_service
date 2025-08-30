@@ -17,7 +17,6 @@ class AnswerBase(BaseModel):
         min_length=1,
         description="Текст ответа на вопрос не может быть пустым, или состоять из одних пробелов",
     )
-    created_at: datetime
 
     @field_validator("text")
     @classmethod
