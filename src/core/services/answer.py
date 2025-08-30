@@ -3,6 +3,7 @@ from starlette.exceptions import HTTPException
 from fastapi import status
 import logging
 
+from core import NotFoundException
 from core.models import Answer
 from repositories import AnswerRepository, QuestionRepository
 from core.schemas import AnswerCreateRequest
@@ -21,9 +22,8 @@ class AnswerService:
         question = await self.question_repo.get_by_id(id=answer_creds.question_id)
         if question is None:
             logger.info("Вопрос с id %s не найден", answer_creds.question_id)
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"Вопрос с ID {answer_creds.question_id} не существует",
+            raise NotFoundException(
+                f"Вопрос с ID {answer_creds.question_id} не существует"
             )
 
         answer: Answer = await self.answer_repo.add(answer_creds=answer_creds)
