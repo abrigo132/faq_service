@@ -6,7 +6,7 @@ import logging
 from repositories import QuestionRepository
 from core.schemas import QuestionCreateRequest
 from core.models import Question
-from core import configure_logging
+
 
 logger = logging.getLogger(__name__)
 

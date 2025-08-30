@@ -2,11 +2,14 @@ from sqlalchemy import select, ScalarResult, Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from typing import Type
+import logging
 
 from sqlalchemy.orm import joinedload
 
 from core.models import Question
 from core.schemas import QuestionCreateRequest
+
+logger = logging.getLogger(__name__)
 
 
 class QuestionRepository:
@@ -22,6 +25,11 @@ class QuestionRepository:
             await self.session.flush()
             return question
         except IntegrityError:
+            logger.error(
+                "Не удалось создать вопрос с текстом: %r",
+                question_creds.text,
+                exc_info=True,
+            )
             await self.session.rollback()
 
     async def get(self) -> Sequence[Question]:
@@ -51,5 +59,4 @@ class QuestionRepository:
             await self.session.delete(question)
             await self.session.flush()
             return question
-
         return question
